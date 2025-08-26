@@ -497,8 +497,8 @@ def create_patient_summary_charts(patient_data):
 
 def create_risk_breakdown_chart(risk_breakdown):
     """Create a radar chart for risk breakdown"""
-    categories = [risk['category'] for risk in risk_breakdown['systemic_risks']]
-    values = [risk['risk_level_num'] for risk in risk_breakdown['systemic_risks']]
+    categories = [risk['system'] for risk in risk_breakdown['systemic_risks']]
+    values = [risk['risk_percent'] for risk in risk_breakdown['systemic_risks']]
     
     fig = go.Figure(data=go.Scatterpolar(
         r=values + [values[0]],  # Close the circle
@@ -523,8 +523,8 @@ def create_risk_breakdown_chart(risk_breakdown):
 
 def create_comorbidity_impact_chart(comorbidity_impact):
     """Create a bar chart for comorbidity impact"""
-    comorbidities = [comorbidity['comorbidity'] for comorbidity in comorbidity_impact]
-    impacts = [comorbidity['impact_level_num'] for comorbidity in comorbidity_impact]
+    comorbidities = [comorbidity['comorbidity_description'] for comorbidity in comorbidity_impact]
+    impacts = [comorbidity['risk_change_percent'] for comorbidity in comorbidity_impact]
     
     # Color based on impact level
     colors = []
@@ -557,12 +557,10 @@ def create_comorbidity_impact_chart(comorbidity_impact):
 def create_alternative_drugs_chart(alternative_drugs):
     """Create a comparison chart for alternative drugs"""
     drugs = [drug['name'] for drug in alternative_drugs]
-    efficacy = [drug['efficacy_score'] for drug in alternative_drugs]
-    safety = [drug['safety_score'] for drug in alternative_drugs]
+    risk = [drug['predicted_risk_percent'] for drug in alternative_drugs]
     
     fig = go.Figure(data=[
-        go.Bar(name='Efficacy', x=drugs, y=efficacy, marker_color='#1f77b4'),
-        go.Bar(name='Safety', x=drugs, y=safety, marker_color='#2ca02c')
+        go.Bar(name='Risk score', x=drugs, y=risk, marker_color='#2ca02c')
     ])
     
     fig.update_layout(
@@ -570,8 +568,8 @@ def create_alternative_drugs_chart(alternative_drugs):
         title="Alternative Drugs: Efficacy vs Safety",
         xaxis_title="Drugs",
         yaxis_title="Score",
-        yaxis=dict(range=[0, 10]),
-        title_x=0.5
+        yaxis=dict(range=[0, 100]),
+        title_x=1
     )
     
     return fig
